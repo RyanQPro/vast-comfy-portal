@@ -1,0 +1,49 @@
+# Exemple de catalogue pour MODEL_CATALOG.
+#
+# `groups` (optionnel, MODEL_CATALOG uniquement) : un setup de base par famille de
+# modèles, installé d'un clic, plus ses LoRAs. Format « dossier ComfyUI: lien(s) ».
+#
+# `characters` (optionnel) : dossier d'un repo HF avec un sous-dossier par personnage
+# (image carrée + un sous-dossier par id de groupe, ex. Alice/flux1/…safetensors).
+# characters: loras/characters
+
+groups:
+  - name: FLUX.1 dev
+    id: flux1
+    description: base + VAE + text encoders (modèle protégé : HF_TOKEN + licence acceptée)
+    setup:
+      diffusion_models: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
+      vae: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors
+      text_encoders:
+        - https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors
+        - https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors
+    # Un dossier du repo HF qui héberge ce catalogue (ex. loras/flux1), ou un lien
+    # https://huggingface.co/<repo>/tree/main/<dossier> : son contenu est listé
+    # automatiquement. Des liens de fichiers marchent aussi.
+    loras:
+      - https://huggingface.co/XLabs-AI/flux-RealismLora/blob/main/lora.safetensors
+
+# `models` : la liste à la carte (onglet « My list »). Même format que
+# /workspace/model-list.yaml.
+# Seuls `url` et `folder` comptent ; `folder` peut être omis s'il se devine depuis
+# l'URL (ex. .../split_files/loras/...). Les liens /blob/ de Hugging Face sont acceptés.
+#
+# Dossiers ComfyUI : checkpoints, diffusion_models, loras, vae, text_encoders,
+# clip_vision, controlnet, upscale_models, embeddings, ...
+models:
+  - name: FLUX.1 [dev] fp8 (tout-en-un)
+    url: https://huggingface.co/Comfy-Org/flux1-dev/resolve/main/flux1-dev-fp8.safetensors
+    folder: checkpoints
+
+  - name: Flux Realism LoRA
+    url: https://huggingface.co/XLabs-AI/flux-RealismLora/blob/main/lora.safetensors
+    folder: loras
+    filename: flux-realism-lora.safetensors   # renomme le fichier enregistré
+
+  - url: https://huggingface.co/Kim2091/UltraSharp/resolve/main/4x-UltraSharp.pth
+    folder: upscale_models
+
+  # CivitAI : page de modèle (avec ou sans ?modelVersionId=) ou lien de téléchargement.
+  # La plupart demandent CIVITAI_TOKEN.
+  - url: https://civitai.com/models/12597?modelVersionId=14856
+    folder: loras

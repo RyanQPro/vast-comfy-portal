@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body {
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .spinner {
+            border: 8px solid #F2F2F2; /* Light grey */
+            border-top: 8px solid grey; /* Dark grey */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .text {
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner"></div>
+    <div class="text">Loading: Check instance logs for progress</div>
+
+    <script>
+        // Function to check if the current page is up
+        function checkService() {
+            fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+                .then(response => {
+                    // While the backend is still down, Caddy serves THIS placeholder
+                    // with the X-Portal-Placeholder marker (see ADR 0017). The real
+                    // backend never sets it, so its absence means the app is now
+                    // answering — reload into it. The status < 500 guard keeps us
+                    // waiting (rather than reload-storming) if a down-state page ever
+                    // arrives without the marker: over a Cloudflare tunnel it is a
+                    // 200, but on any direct/proxy path it stays a 5xx.
+                    var placeholder = response.headers.get('X-Portal-Placeholder');
+                    if (!placeholder && response.status < 500) {
+                        // Reload the page
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking service:', error);
+                });
+        }
+
+        // Check the current page every 5 seconds
+        setInterval(checkService, 5000);
+    </script>
+</body>
+</html>
